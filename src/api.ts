@@ -4,7 +4,11 @@ import type { GitHubRepository, GitHubUser, queryOBJType } from "./types";
 
 export async function getUser(username: string): Promise<GitHubUser> {
   try {
-    const response = await HTTP.get<GitHubUser>(`/users/${username}`);
+    let url = `/user`;
+    if (username) {
+      url = `/users/${username}`;
+    }
+    const response = await HTTP.get<GitHubUser>(url);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -16,6 +20,9 @@ export async function getRepos(repos_url: string): Promise<GitHubRepository[]> {
     page: new URLSearchParams(window.location.search).get("page") || "1",
     per_page:
       new URLSearchParams(window.location.search).get("per_page") || "10",
+    q:
+      new URLSearchParams(window.location.search).get("q") ||
+      "Color-Guessing-Game",
   };
   const urlSearchParams = helpers.queryValidation(queryOBJ);
 

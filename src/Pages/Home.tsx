@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import SearchBar from "../Components/SearchBar";
 import { useSearchParams } from "react-router-dom";
 import { getUser, getRepos } from "../api";
@@ -37,16 +37,12 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      if (!search) {
-        setUser(null);
-        setRepos(null);
-        return;
-      }
+      setUser(null);
+      setRepos(null);
       setLoading(true);
-      const userData = await getUser(search);
+      const userData = await getUser(search || "");
       setUser(userData);
 
-      // Fetch repositories
       const reposData = await getRepos(userData.repos_url);
       setRepos(reposData);
     } catch (error) {
@@ -67,21 +63,34 @@ export default function Home() {
   }, [searchParams.get("page"), searchParams.get("per_page")]);
 
   return (
-    <section className="flex flex-col gap-5">
+    <section className="flex flex-col gap-5 p-5">
       <SearchBar />
       {loading ? (
         <UserProfileSkeleton />
       ) : (
         user?.id && <UserDataCard user={user} />
       )}
+
       {loadingRepos ? (
         <ReposSkeleton count={4} />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2  gap-5">
-          {repos?.map((repo) => (
-            <RepoCard repo={repo} key={repo.id} />
-          ))}
-        </div>
+        <>
+          {repos?.length && repos.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              <h2 className="text-2xl font-bold">Repositories</h2>
+              <p className="text-sm text-gray">
+                {user?.public_repos} repositories found
+              </p>
+            </div>
+          ) : (
+            <h2 className="text-2xl font-bold">No repositories found</h2>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2  gap-5">
+            {repos?.map((repo) => (
+              <RepoCard repo={repo} key={repo.id} />
+            ))}
+          </div>
+        </>
       )}
       {repos?.length && repos.length >= 10 && <CPagination />}
     </section>

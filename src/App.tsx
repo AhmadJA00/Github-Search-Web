@@ -7,11 +7,13 @@ import {
 import MainLayout from "./Layouts/MainLayout";
 import Home from "./Pages/Home";
 import { UserDataProvider } from "./hooks/useUserData";
+import NotFound from "./Pages/NotFound";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<MainLayout />}>
       <Route path="/" element={<Home />} />
+      <Route path="*" element={<NotFound />} />
     </Route>
   )
 );

@@ -169,4 +169,6 @@ export interface GitHubRepository {
 export type queryOBJType = {
   page?: string;
   per_page?: string;
+  q?: string;
+  search?: string;
 };
