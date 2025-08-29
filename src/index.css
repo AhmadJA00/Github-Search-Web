@@ -27,3 +27,26 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.bg-github-gradient {
+  background-image: linear-gradient(
+      to right,
+      rgba(13, 17, 23, 1) 0%,
+      rgba(13, 17, 23, 0.97) 40%,
+      rgba(13, 17, 23, 0.96) 70%,
+      rgba(13, 17, 23, 0.95) 100%
+    ),
+    url("./assets/github.png");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: 600px 600px;
+  background-position: right 10% bottom; /* Move it down more */
+  background-attachment: fixed; /* This makes it stay in viewport */
+}
+
+@media (max-width: 768px) {
+  .bg-github-gradient {
+    background-size: 350px 350px;
+    background-position: right -200% bottom; /* Move it down more */
+  }
+}

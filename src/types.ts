@@ -9,6 +9,7 @@ export type ButtonProps = {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   icon?: React.ReactNode;
   onKeyDown?: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
+  disabled?: boolean;
 };
 export interface GitHubUser {
   login: string;
@@ -165,10 +166,9 @@ export interface GitHubRepository {
     triage: boolean;
     pull: boolean;
   };
-  score: number; // This is specific to search results
+  score: number;
 }
 
-// Add this new interface for search responses
 export interface GitHubSearchResponse {
   total_count: number;
   incomplete_results: boolean;
@@ -181,4 +181,6 @@ export type queryOBJType = {
   sort?: string;
   order?: string;
   q?: string;
+  isPrivate?: string;
+  isPublic?: string;
 };

@@ -7,30 +7,41 @@ import type {
   queryOBJType,
 } from "./types";
 
-export async function getUser(username?: string): Promise<GitHubUser> {
+export async function getUser(
+  username?: string,
+  signal?: AbortSignal
+): Promise<GitHubUser> {
   try {
     let url = `/user`;
     if (username) {
       url = `/users/${username}`;
     }
-    const response = await HTTP.get<GitHubUser>(url);
+    const response = await HTTP.get<GitHubUser>(url, {
+      signal,
+    });
     return response.data;
   } catch (error) {
     console.error(error);
     throw error;
   }
 }
-export async function getRepos(repos_url: string): Promise<GitHubRepository[]> {
+export async function getRepos(
+  repos_url: string,
+  signal?: AbortSignal
+): Promise<GitHubRepository[]> {
+  const searchParams = new URLSearchParams(window.location.search);
   const queryOBJ: queryOBJType = {
-    page: new URLSearchParams(window.location.search).get("page") || "1",
-    per_page:
-      new URLSearchParams(window.location.search).get("per_page") || "10",
+    page: searchParams.get("page") || "1",
+    per_page: searchParams.get("per_page") || "10",
   };
   const urlSearchParams = helpers.queryValidation(queryOBJ);
 
   try {
     const response = await HTTP.get<GitHubRepository[]>(
-      `${repos_url}?${urlSearchParams.toString()}`
+      `${repos_url}?${urlSearchParams.toString()}`,
+      {
+        signal,
+      }
     );
     return response.data;
   } catch (error) {
@@ -39,44 +50,55 @@ export async function getRepos(repos_url: string): Promise<GitHubRepository[]> {
   }
 }
 
-// export async function getAllRepositories(
-//   username: string
-// ): Promise<GitHubSearchResponse> {
-//   const queryOBJ: queryOBJType = {
-//     page: new URLSearchParams(window.location.search).get("page") || "1",
-//     per_page:
-//       new URLSearchParams(window.location.search).get("per_page") || "10",
-//     sort: new URLSearchParams(window.location.search).get("sortBy") || "",
-//     order: new URLSearchParams(window.location.search).get("sortOrder") || "",
-//   };
+export async function getAllRepositories(
+  username?: string,
+  signal?: AbortSignal
+): Promise<GitHubSearchResponse> {
+  const searchParams = new URLSearchParams(window.location.search);
 
-//   const urlSearchParams = helpers.queryValidation(queryOBJ);
+  let query = username ? `user:${username}` : "";
 
-//   try {
-//     const response = await HTTP.get<GitHubSearchResponse>(
-//       `/users/${username}/repos?${urlSearchParams.toString()}`
-//     );
-//     return response.data;
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-// }
-export async function getAllRepositories(): Promise<GitHubSearchResponse> {
+  const isPrivate = searchParams.get("isPrivate");
+  const isPublic = searchParams.get("isPublic");
+  const minStars = searchParams.get("minStars");
+  const maxStars = searchParams.get("maxStars");
+
+  if (isPrivate === "true") {
+    query += query ? " is:private" : "is:private";
+  }
+
+  if (isPublic === "true") {
+    query += query ? " is:public" : "is:public";
+  }
+
+  if (minStars && !maxStars) {
+    query += ` stars:<=${minStars}`;
+  }
+
+  if (maxStars && !minStars) {
+    query += ` stars:>=${maxStars}`;
+  }
+
+  if (minStars && maxStars) {
+    query += ` stars:${minStars}..${maxStars}`;
+  }
+
   const queryOBJ: queryOBJType = {
-    page: new URLSearchParams(window.location.search).get("page") || "1",
-    per_page:
-      new URLSearchParams(window.location.search).get("per_page") || "10",
-    q: new URLSearchParams(window.location.search).get("search") || "",
-    sort: new URLSearchParams(window.location.search).get("sortBy") || "",
-    order: new URLSearchParams(window.location.search).get("sortOrder") || "",
+    page: searchParams.get("page") || "1",
+    per_page: searchParams.get("per_page") || "10",
+    q: query,
+    sort: searchParams.get("sortBy") || "",
+    order: searchParams.get("sortOrder") || "",
   };
 
   const urlSearchParams = helpers.queryValidation(queryOBJ);
 
   try {
     const response = await HTTP.get<GitHubSearchResponse>(
-      `search/repositories?${urlSearchParams.toString()}`
+      `search/repositories?${urlSearchParams.toString()}`,
+      {
+        signal,
+      }
     );
     return response.data;
   } catch (error) {

@@ -2,16 +2,20 @@ import React from "react";
 import CButton from "./CButton";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useDebounce } from "../hooks/useDebounce";
+import { useUserData } from "../hooks/useUserData";
+import { useReposData } from "../hooks/useReposData";
 
 export default function SearchBar({ className }: { className?: string }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = React.useState(searchParams.get("search") || "");
   const { pathname } = useLocation();
   const debouncedSearch = useDebounce(search, 1000);
-  console.log(debouncedSearch);
+  const { loading, loadingRepos } = useUserData();
+  const { loadingRepositories } = useReposData();
 
   const handleSearchClick = () => {
     searchParams.set("search", search);
+    searchParams.set("page", "1");
     setSearchParams(searchParams);
   };
   const handleSearchOnEnter = (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,11 +26,12 @@ export default function SearchBar({ className }: { className?: string }) {
   React.useEffect(() => {
     if (debouncedSearch.trim() !== "") {
       searchParams.set("search", debouncedSearch);
-      setSearchParams(searchParams);
     } else {
       searchParams.delete("search");
-      setSearchParams(searchParams);
     }
+    searchParams.set("page", "1");
+
+    setSearchParams(searchParams);
   }, [debouncedSearch]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +58,7 @@ export default function SearchBar({ className }: { className?: string }) {
                     rounded-s-lg border-e border-gray/75 group-hover:border-gray"
       />
       <CButton
+        disabled={loading || loadingRepos || loadingRepositories}
         icon={
           <svg
             xmlns="http://www.w3.org/2000/svg"

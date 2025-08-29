@@ -15,7 +15,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-primary-light rounded-lg p-1 md:py-3 md:px-5 flex items-center justify-between gap-2 md:gap-5">
+    <nav className=" bg-primary-light rounded-lg p-1 md:py-3 md:px-5 flex items-center justify-between gap-2 md:gap-5">
       <SearchBar className="flex-2 md:flex-3" />
       <div className="flex-1 flex items-center justify-center gap-2 md:gap-5">
         {pages.map((page) => (

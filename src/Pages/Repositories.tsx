@@ -4,72 +4,87 @@ import { useSearchParams } from "react-router-dom";
 import CPagination from "../Components/CPagination";
 import RepositoryTable from "../Components/RepositoryTable";
 import RepositoryTableSkeleton from "../Components/Loading Skeleton/RepositoryTableSkeleton";
-import type { GitHubSearchResponse } from "../types";
+import { useReposData } from "../hooks/useReposData";
+import Sidebar from "../Components/Sidebar";
 
 export default function Repositories() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
-  const [repositories, setRepositories] =
-    React.useState<GitHubSearchResponse | null>(null);
-  const [loading, setLoading] = React.useState(false);
+  const {
+    repositories,
+    setRepositories,
+    loadingRepositories,
+    setLoadingRepositories,
+  } = useReposData();
 
-  const fetchRepositories = async () => {
+  const fetchRepositories = async (abortSignal: AbortSignal) => {
     try {
-      setLoading(true);
-      const data = await getAllRepositories();
+      if (!search) return;
+      setLoadingRepositories(true);
+      const data = await getAllRepositories(search, abortSignal);
       setRepositories(data);
     } catch (error) {
       console.error("Error fetching repositories:", error);
     } finally {
-      setLoading(false);
+      setLoadingRepositories(false);
     }
   };
 
   React.useEffect(() => {
+    const abortController = new AbortController();
+
     if (search) {
-      fetchRepositories();
+      fetchRepositories(abortController.signal);
     } else {
       setRepositories(null);
     }
+
+    return () => {
+      abortController.abort();
+    };
   }, [
     search,
     searchParams.get("page"),
     searchParams.get("per_page"),
     searchParams.get("sortBy"),
     searchParams.get("sortOrder"),
+    searchParams.get("isPrivate"),
+    searchParams.get("isPublic"),
+    searchParams.get("minStars"),
+    searchParams.get("maxStars"),
   ]);
 
-  if (!loading && (!repositories || repositories.total_count === 0)) {
-    return (
-      <div className="text-center py-12">
-        <h3 className="text-lg font-medium text-light mb-2">
-          No repositories found
-        </h3>
-        <p className="text-gray">
-          {search
-            ? `No repositories found for "${search}"`
-            : "Search for repositories to get started"}
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-light">
-          Repositories ({repositories?.total_count || 0})
-        </h2>
-      </div>
-
-      {loading ? (
-        <RepositoryTableSkeleton count={8} />
+    <div className="flex gap-5">
+      {/* <Sidebar /> */}
+      {!loadingRepositories &&
+      (!repositories || repositories.total_count === 0) ? (
+        <div className="text-center py-12 flex-5 w-full">
+          <h3 className="text-lg font-medium text-light mb-2">
+            No repositories found
+          </h3>
+          <p className="text-gray">
+            {search
+              ? `No repositories found for "${search}"`
+              : "Search for repositories to get started"}
+          </p>
+        </div>
       ) : (
-        <RepositoryTable repositories={repositories?.items || []} />
-      )}
+        <div className="space-y-5 flex-5 w-full">
+          <h2 className="text-2xl font-bold text-light">
+            Repositories ({repositories?.total_count || 0})
+          </h2>
 
-      {repositories?.total_count && repositories?.total_count > 0 && (
-        <CPagination totalItems={repositories?.total_count || 0} />
+          {loadingRepositories ? (
+            <RepositoryTableSkeleton count={8} />
+          ) : (
+            <RepositoryTable repositories={repositories?.items || []} />
+          )}
+
+          {repositories?.total_count && repositories?.total_count > 0 && (
+            <CPagination totalItems={repositories?.total_count || 0} />
+          )}
+        </div>
       )}
     </div>
   );

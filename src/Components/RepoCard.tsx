@@ -55,7 +55,7 @@ const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
   const displayText = isExpanded ? description : description.slice(0, 60);
 
   return (
-    <div className="border border-gray rounded-lg p-2 md:p-5 hover:border-secondary transition-colors duration-200 group">
+    <div className="border border-gray rounded-lg p-2 md:p-5 hover:border-secondary transition-colors duration-200 group backdrop-blur md:backdrop-blur-3xl">
       <div className="flex flex-col gap-5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 flex flex-col gap-1">

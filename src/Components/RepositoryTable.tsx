@@ -31,7 +31,7 @@ export default function RepositoryTable({
 
   return (
     <div className="overflow-hidden border border-gray rounded-lg">
-      <table className="min-w-full bg-primary  ">
+      <table className="min-w-full   ">
         <thead className="bg-primary-light">
           <tr>
             <CTh>Repository</CTh>
@@ -42,7 +42,7 @@ export default function RepositoryTable({
             <CTh>Actions</CTh>
           </tr>
         </thead>
-        <tbody className="bg-primary divide-y divide-gray/20">
+        <tbody className=" divide-y divide-gray/20">
           {repositories.map((repo) => {
             const { description, isExpanded, shouldShowReadMore, displayText } =
               getDescriptionDisplay(repo);

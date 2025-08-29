@@ -7,8 +7,9 @@ console.log(token);
 export const HTTP = axios.create({
   baseURL: baseURL,
   headers: {
-    Accept: "application/vnd.github.v3+json",
+    Accept: "application/vnd.github+json",
     "Content-Type": "application/json",
+    "X-GitHub-Api-Version": "2022-11-28",
   },
 });
 

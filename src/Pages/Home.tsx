@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { AbortedDeferredError, useSearchParams } from "react-router-dom";
 import { getUser, getRepos } from "../api";
 import { useUserData } from "../hooks/useUserData";
 import UserDataCard from "../Components/UserDataCard";
@@ -24,58 +24,77 @@ export default function Home() {
     setLoadingRepos,
   } = useUserData();
 
-  const fetchRepos = async (userData: GitHubUser) => {
+  const fetchRepos = async (
+    userData: GitHubUser,
+    abortSignal?: AbortSignal
+  ) => {
     try {
       setLoadingRepos(true);
-      const reposData = await getRepos(userData?.repos_url || "");
+      const reposData = await getRepos(userData.repos_url, abortSignal);
       setRepos(reposData);
     } catch (error) {
-      console.error(error);
+      if (error instanceof AbortedDeferredError) {
+        console.error(error);
+      }
     } finally {
       setLoadingRepos(false);
     }
   };
 
-  const fetchData = async () => {
+  const fetchData = async (abortSignal?: AbortSignal) => {
     try {
       setUser(null);
       setRepos(null);
       setLoading(true);
-      searchParams.set("page", "1");
-      searchParams.set("per_page", "10");
-      setSearchParams(searchParams);
 
       const catchedUser = helpers.getDataFromLocalStorage(
         `${search || "AhmadJA00"}_data`
       );
       if (catchedUser) {
         setUser(catchedUser);
-        fetchRepos(catchedUser);
+        fetchRepos(catchedUser, abortSignal);
         return;
       }
-      const userData = await getUser(search || "");
+      searchParams.set("page", "1");
+      searchParams.set("per_page", "10");
+      setSearchParams(searchParams);
+      const userData = await getUser(search || "", abortSignal);
       helpers.storeUserDataInLocalStorage(
         `${search || "AhmadJA00"}_data`,
         userData
       );
-      fetchRepos(userData);
+      fetchRepos(userData, abortSignal);
       setUser(userData);
     } catch (error) {
-      console.error(error);
+      if (error instanceof AbortedDeferredError) {
+        console.error(error);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
-  }, [search]);
+    const abortController = new AbortController();
 
-  useEffect(() => {
-    if (user?.public_repos) {
-      fetchRepos(user);
-    }
-  }, [searchParams.get("page"), searchParams.get("per_page")]);
+    fetchData(abortController.signal);
+
+    return () => {
+      abortController.abort();
+    };
+  }, [searchParams.get("page"), searchParams.get("per_page"), search]);
+
+  // useEffect(() => {
+  //   if (user?.public_repos) {
+  //     const abortController = new AbortController();
+
+  //     fetchRepos(user, abortController.signal);
+
+  //     return () => {
+  //       abortController.abort();
+  //     };
+  //   }
+  // }, [searchParams.get("page"), searchParams.get("per_page")]);
 
   if (!loading && !user) {
     return (

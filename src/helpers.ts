@@ -2,7 +2,7 @@ import type { GitHubRepository, GitHubUser, queryOBJType } from "./types";
 
 export const helpers = {
   queryValidation: (queryOBJ: queryOBJType) => {
-    const { page, per_page, search, q, sort, order } = queryOBJ;
+    const { page, per_page, search, q, sort, order, isPublic } = queryOBJ;
 
     const urlSearchParams = new URLSearchParams();
 
