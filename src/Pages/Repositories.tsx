@@ -5,7 +5,6 @@ import CPagination from "../Components/CPagination";
 import RepositoryTable from "../Components/RepositoryTable";
 import RepositoryTableSkeleton from "../Components/Loading Skeleton/RepositoryTableSkeleton";
 import { useReposData } from "../hooks/useReposData";
-import Sidebar from "../Components/Sidebar";
 
 export default function Repositories() {
   const [searchParams] = useSearchParams();
