@@ -55,11 +55,11 @@ const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
   const displayText = isExpanded ? description : description.slice(0, 60);
 
   return (
-    <div className="border border-gray rounded-lg p-4 hover:border-secondary transition-colors duration-200 group">
+    <div className="border border-gray rounded-lg p-2 md:p-5 hover:border-secondary transition-colors duration-200 group">
       <div className="flex flex-col gap-5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 flex flex-col gap-1">
-            <h3 className="text-lg font-semibold text-white ">
+            <h3 className="md:text-lg font-semibold text-white ">
               <a
                 href={repo.html_url}
                 target="_blank"
@@ -69,11 +69,11 @@ const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
                 {repo.name}
               </a>
             </h3>
-            <div className="text-sm text-gray">
+            <div className="text-xs md:text-sm text-gray">
               <p>{repo.full_name}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray">
+          <div className="flex items-center gap-2 text-xs md:text-sm text-gray">
             <span className="flex items-center gap-1">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -96,8 +96,8 @@ const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
           </div>
         </div>
 
-        <div className="text-sm text-gray flex items-center flex-wrap gap-1">
-          <p className="text-justify">
+        <div className="text-xs md:text-sm text-gray flex items-center flex-wrap gap-1 ">
+          <p className="text-justify ">
             {displayText}
             {shouldShowReadMore && !isExpanded && description.length > 60 && (
               <span className="text-secondary">...</span>
@@ -106,14 +106,14 @@ const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
           {shouldShowReadMore && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="text-secondary hover:text-white transition-colors duration-200 text-sm "
+              className="text-secondary hover:text-white transition-colors duration-200 text-xs md:text-sm "
             >
               {isExpanded ? "Show less" : "Read more"}
             </button>
           )}
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-gray">
+        <div className="flex items-center gap-4 text-xs md:text-sm text-gray">
           {repo.language && (
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-secondary"></div>

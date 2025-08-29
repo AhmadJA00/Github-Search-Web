@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import SearchBar from "../Components/SearchBar";
 import { useSearchParams } from "react-router-dom";
 import { getUser, getRepos } from "../api";
 import { useUserData } from "../hooks/useUserData";
@@ -8,9 +7,11 @@ import UserProfileSkeleton from "../Components/Loading Skeleton/UserProfileSkele
 import ReposSkeleton from "../Components/Loading Skeleton/ReposSkeleton";
 import RepoCard from "../Components/RepoCard";
 import CPagination from "../Components/CPagination";
+import type { GitHubUser } from "../types";
+import { helpers } from "../helpers";
 
 export default function Home() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search");
   const {
     user,
@@ -23,10 +24,10 @@ export default function Home() {
     setLoadingRepos,
   } = useUserData();
 
-  const fetchRepos = async () => {
+  const fetchRepos = async (userData: GitHubUser) => {
     try {
       setLoadingRepos(true);
-      const reposData = await getRepos(user?.repos_url || "");
+      const reposData = await getRepos(userData?.repos_url || "");
       setRepos(reposData);
     } catch (error) {
       console.error(error);
@@ -40,11 +41,25 @@ export default function Home() {
       setUser(null);
       setRepos(null);
       setLoading(true);
-      const userData = await getUser(search || "");
-      setUser(userData);
+      searchParams.set("page", "1");
+      searchParams.set("per_page", "10");
+      setSearchParams(searchParams);
 
-      const reposData = await getRepos(userData.repos_url);
-      setRepos(reposData);
+      const catchedUser = helpers.getDataFromLocalStorage(
+        `${search || "AhmadJA00"}_data`
+      );
+      if (catchedUser) {
+        setUser(catchedUser);
+        fetchRepos(catchedUser);
+        return;
+      }
+      const userData = await getUser(search || "");
+      helpers.storeUserDataInLocalStorage(
+        `${search || "AhmadJA00"}_data`,
+        userData
+      );
+      fetchRepos(userData);
+      setUser(userData);
     } catch (error) {
       console.error(error);
     } finally {
@@ -58,13 +73,27 @@ export default function Home() {
 
   useEffect(() => {
     if (user?.public_repos) {
-      fetchRepos();
+      fetchRepos(user);
     }
   }, [searchParams.get("page"), searchParams.get("per_page")]);
 
+  if (!loading && !user) {
+    return (
+      <div className="text-center py-12">
+        <h3 className="text-lg font-medium text-light mb-2">
+          No repositories found
+        </h3>
+        <p className="text-gray">
+          {search
+            ? `No repositories found for "${search}"`
+            : "Search for repositories to get started"}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <section className="flex flex-col gap-5 p-5">
-      <SearchBar />
+    <section className="flex flex-col gap-5">
       {loading ? (
         <UserProfileSkeleton />
       ) : (
@@ -76,23 +105,29 @@ export default function Home() {
       ) : (
         <>
           {repos?.length && repos.length > 0 ? (
-            <div className="flex flex-col gap-2">
-              <h2 className="text-2xl font-bold">Repositories</h2>
-              <p className="text-sm text-gray">
-                {user?.public_repos} repositories found
-              </p>
-            </div>
+            <>
+              <div className="flex items-center md:items-start justify-between md:flex-col gap-2">
+                <h2 className="text-2xl font-bold">Repositories</h2>
+                <p className="text-sm text-gray">
+                  {user?.public_repos} repositories found
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2  gap-5">
+                {repos?.map((repo) => (
+                  <RepoCard repo={repo} key={repo.id} />
+                ))}
+              </div>
+            </>
           ) : (
             <h2 className="text-2xl font-bold">No repositories found</h2>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2  gap-5">
-            {repos?.map((repo) => (
-              <RepoCard repo={repo} key={repo.id} />
-            ))}
-          </div>
         </>
       )}
-      {repos?.length && repos.length >= 10 && <CPagination />}
+      {repos?.length && repos.length >= 10 ? (
+        <CPagination totalItems={user?.public_repos || 0} />
+      ) : (
+        ""
+      )}
     </section>
   );
 }

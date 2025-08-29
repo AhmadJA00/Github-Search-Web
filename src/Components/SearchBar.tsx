@@ -1,10 +1,14 @@
 import React from "react";
 import CButton from "./CButton";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { useDebounce } from "../hooks/useDebounce";
 
-export default function SearchBar() {
+export default function SearchBar({ className }: { className?: string }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = React.useState(searchParams.get("search") || "");
+  const { pathname } = useLocation();
+  const debouncedSearch = useDebounce(search, 1000);
+  console.log(debouncedSearch);
 
   const handleSearchClick = () => {
     searchParams.set("search", search);
@@ -15,21 +19,36 @@ export default function SearchBar() {
     handleSearchClick();
   };
 
+  React.useEffect(() => {
+    if (debouncedSearch.trim() !== "") {
+      searchParams.set("search", debouncedSearch);
+      setSearchParams(searchParams);
+    } else {
+      searchParams.delete("search");
+      setSearchParams(searchParams);
+    }
+  }, [debouncedSearch]);
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
+  React.useEffect(() => {
+    setSearch(searchParams.get("search") || "");
+  }, [searchParams]);
   return (
     <form
       onSubmit={handleSearchOnEnter}
-      className="flex border border-gray/75 rounded-lg hover:border-gray transition-all duration-200 group"
+      className={`flex border border-gray/75 rounded-lg hover:border-gray transition-all duration-200 group ${className}`}
     >
       <input
         value={search}
         onChange={handleSearchChange}
         type="text"
-        placeholder="Search"
-        className="flex-1 bg-primary px-5 py-2 placeholder:text-gray/75 w-full 
+        placeholder={
+          pathname === "/repositories" ? "Search Repositories" : "Search Users"
+        }
+        className="flex-1 bg-primary px-2 md:px-5 py-2 placeholder:text-gray/75 w-full text-xs md:text-base
                     outline-none   transition-all duration-200 
                     rounded-s-lg border-e border-gray/75 group-hover:border-gray"
       />

@@ -165,10 +165,20 @@ export interface GitHubRepository {
     triage: boolean;
     pull: boolean;
   };
+  score: number; // This is specific to search results
+}
+
+// Add this new interface for search responses
+export interface GitHubSearchResponse {
+  total_count: number;
+  incomplete_results: boolean;
+  items: GitHubRepository[];
 }
 export type queryOBJType = {
   page?: string;
   per_page?: string;
-  q?: string;
   search?: string;
+  sort?: string;
+  order?: string;
+  q?: string;
 };
