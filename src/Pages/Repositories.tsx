@@ -1,15 +1,15 @@
 import React from "react";
 import { getAllRepositories } from "../api";
 import { useSearchParams } from "react-router-dom";
-import CPagination from "../components/CPagination";
-import RepositoryTable from "../components/RepositoryTable";
-import RepositoryTableSkeleton from "../components/Loading Skeleton/RepositoryTableSkeleton";
+import CPagination from "../Components/CPagination";
+import RepositoryTable from "../Components/RepositoryTable";
+import RepositoryTableSkeleton from "../Components/Loading Skeleton/RepositoryTableSkeleton";
 import { useReposData } from "../hooks/useReposData";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../Components/Sidebar";
 import notFoundVector from "../assets/notFoundVector.png";
-import CButton from "../components/CButton";
-import { FilterIcon } from "../components/Icons";
-import CSelect from "../components/CSelect";
+import CButton from "../Components/CButton";
+import { FilterIcon } from "../Components/Icons";
+import CSelect from "../Components/CSelect";
 
 export default function Repositories() {
   const [searchParams, setSearchParams] = useSearchParams();

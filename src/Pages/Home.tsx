@@ -5,11 +5,11 @@ import { useUserData } from "../hooks/useUserData";
 import type { GitHubUser } from "../types";
 import { helpers } from "../helpers";
 import notFoundVector from "../assets/notFoundVector.png";
-import UserProfileSkeleton from "../components/Loading Skeleton/UserProfileSkeleton";
-import UserDataCard from "../components/UserDataCard";
-import ReposSkeleton from "../components/Loading Skeleton/ReposSkeleton";
-import RepoCard from "../components/RepoCard";
-import CPagination from "../components/CPagination";
+import UserProfileSkeleton from "../Components/Loading Skeleton/UserProfileSkeleton";
+import UserDataCard from "../Components/UserDataCard";
+import ReposSkeleton from "../Components/Loading Skeleton/ReposSkeleton";
+import RepoCard from "../Components/RepoCard";
+import CPagination from "../Components/CPagination";
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();

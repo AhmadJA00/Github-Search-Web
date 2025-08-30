@@ -4,10 +4,10 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import MainLayout from "./layouts/MainLayout";
-import Home from "./pages/Home";
-import Repositories from "./pages/Repositories";
-import NotFound from "./pages/NotFound";
+import MainLayout from "./Layouts/MainLayout";
+import Home from "./Pages/Home";
+import Repositories from "./Pages/Repositories";
+import NotFound from "./Pages/NotFound";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
