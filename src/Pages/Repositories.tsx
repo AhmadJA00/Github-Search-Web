@@ -80,7 +80,7 @@ export default function Repositories() {
               value={searchParams.get("searchBy") || "user"}
               id="searchBy"
               allowClear={false}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                 searchParams.set("searchBy", e.target.value);
                 setSearchParams(searchParams);
               }}

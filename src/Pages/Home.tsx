@@ -2,14 +2,14 @@ import { useEffect } from "react";
 import { AbortedDeferredError, useSearchParams } from "react-router-dom";
 import { getUser, getRepos } from "../api";
 import { useUserData } from "../hooks/useUserData";
-import UserDataCard from "../components/UserDataCard";
-import UserProfileSkeleton from "../components/Loading Skeleton/UserProfileSkeleton";
-import ReposSkeleton from "../components/Loading Skeleton/ReposSkeleton";
-import RepoCard from "../components/RepoCard";
-import CPagination from "../components/CPagination";
 import type { GitHubUser } from "../types";
 import { helpers } from "../helpers";
 import notFoundVector from "../assets/notFoundVector.png";
+import UserProfileSkeleton from "../components/Loading Skeleton/UserProfileSkeleton";
+import UserDataCard from "../components/UserDataCard";
+import ReposSkeleton from "../components/Loading Skeleton/ReposSkeleton";
+import RepoCard from "../components/RepoCard";
+import CPagination from "../components/CPagination";
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
