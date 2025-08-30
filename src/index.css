@@ -13,6 +13,10 @@
   --color-gray: #e4e4e4;
 }
 
+input {
+  touch-action: manipulation !important;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
