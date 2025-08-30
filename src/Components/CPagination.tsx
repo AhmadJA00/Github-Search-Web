@@ -1,5 +1,6 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
+import CSelect from "./CSelect";
 
 export default function CPagination({ totalItems }: { totalItems: number }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -30,20 +31,20 @@ export default function CPagination({ totalItems }: { totalItems: number }) {
   return (
     <div className="text-center text-gray flex items-center justify-center gap-2">
       <div>
-        <select
-          title="per_page"
-          name="per_page"
+        <CSelect
           id="per_page"
-          value={perPage}
+          value={perPage.toString()}
           onChange={handlePerPageChange}
-          className="bg-primary px-2 text-xs md:text-sm rounded-lg"
-        >
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-        </select>
+          className="w-full"
+          allowClear={false}
+          options={[
+            { value: "10", label: "10" },
+            { value: "20", label: "20" },
+            { value: "30", label: "30" },
+            { value: "40", label: "40" },
+            { value: "50", label: "50" },
+          ]}
+        />
       </div>
       <div className="text-center text-gray flex items-center justify-center gap-2">
         <button

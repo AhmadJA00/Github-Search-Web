@@ -1,6 +1,6 @@
 import React from "react";
 import CButton from "./CButton";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useDebounce } from "../hooks/useDebounce";
 import { useUserData } from "../hooks/useUserData";
 import { useReposData } from "../hooks/useReposData";
@@ -8,17 +8,27 @@ import { useReposData } from "../hooks/useReposData";
 export default function SearchBar({ className }: { className?: string }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = React.useState(searchParams.get("search") || "");
-  const { pathname } = useLocation();
+  const [warningText, setWarningText] = React.useState("");
   const debouncedSearch = useDebounce(search, 1000);
   const { loading, loadingRepos } = useUserData();
   const { loadingRepositories } = useReposData();
 
   const handleSearchClick = () => {
+    if (search.trim() === "") {
+      setWarningText("Please enter a username to search");
+      return;
+    }
+    setWarningText("");
     searchParams.set("search", search);
     searchParams.set("page", "1");
     setSearchParams(searchParams);
   };
   const handleSearchOnEnter = (e: React.FormEvent<HTMLFormElement>) => {
+    if (search.trim() === "") {
+      setWarningText("Please enter a username to search");
+      return;
+    }
+    setWarningText("");
     e.preventDefault();
     handleSearchClick();
   };
@@ -35,6 +45,7 @@ export default function SearchBar({ className }: { className?: string }) {
   }, [debouncedSearch]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWarningText("");
     setSearch(e.target.value);
   };
 
@@ -50,15 +61,15 @@ export default function SearchBar({ className }: { className?: string }) {
         value={search}
         onChange={handleSearchChange}
         type="text"
-        placeholder={
-          pathname === "/repositories" ? "Search Repositories" : "Search Users"
-        }
-        className="flex-1 bg-primary px-2 md:px-5 py-2 placeholder:text-gray/75 w-full text-xs md:text-base
+        placeholder={warningText || "Search Users"}
+        className={`flex-1 bg-primary px-2 md:px-5 py-2 placeholder:text-gray/75 w-full text-xs md:text-base
                     outline-none   transition-all duration-200 
-                    rounded-s-lg border-e border-gray/75 group-hover:border-gray"
+                    rounded-s-lg border-e border-gray/75 group-hover:border-gray
+                    ${warningText ? "placeholder:text-red-500" : ""}`}
       />
       <CButton
         disabled={loading || loadingRepos || loadingRepositories}
+        className="rounded-e-lg md:hidden "
         icon={
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -73,7 +84,7 @@ export default function SearchBar({ className }: { className?: string }) {
         }
         onClick={handleSearchClick}
       >
-        Search
+        <span className="hidden md:block">Search</span>
       </CButton>
     </form>
   );

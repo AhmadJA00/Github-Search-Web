@@ -62,6 +62,10 @@ export async function getAllRepositories(
   const isPublic = searchParams.get("isPublic");
   const minStars = searchParams.get("minStars");
   const maxStars = searchParams.get("maxStars");
+  const minForks = searchParams.get("minForks");
+  const maxForks = searchParams.get("maxForks");
+  const updatedAt = searchParams.get("updatedAt");
+  const language = searchParams.get("language");
 
   if (isPrivate === "true") {
     query += query ? " is:private" : "is:private";
@@ -81,6 +85,26 @@ export async function getAllRepositories(
 
   if (minStars && maxStars) {
     query += ` stars:${minStars}..${maxStars}`;
+  }
+
+  if (minForks && !maxForks) {
+    query += ` forks:<=${minForks}`;
+  }
+
+  if (maxForks && !minForks) {
+    query += ` forks:>=${maxForks}`;
+  }
+
+  if (minForks && maxForks) {
+    query += ` forks:${minForks}..${maxForks}`;
+  }
+
+  if (updatedAt) {
+    query += ` pushed:>=${updatedAt}`;
+  }
+
+  if (language) {
+    query += ` language:${language}`;
   }
 
   const queryOBJ: queryOBJType = {

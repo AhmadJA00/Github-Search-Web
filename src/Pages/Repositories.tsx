@@ -5,9 +5,13 @@ import CPagination from "../Components/CPagination";
 import RepositoryTable from "../Components/RepositoryTable";
 import RepositoryTableSkeleton from "../Components/Loading Skeleton/RepositoryTableSkeleton";
 import { useReposData } from "../hooks/useReposData";
+import Sidebar from "../Components/Sidebar";
+import CButton from "../Components/CButton";
+import { FilterIcon } from "../Components/Icons";
 
 export default function Repositories() {
   const [searchParams] = useSearchParams();
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const search = searchParams.get("search");
   const {
     repositories,
@@ -47,15 +51,24 @@ export default function Repositories() {
     searchParams.get("per_page"),
     searchParams.get("sortBy"),
     searchParams.get("sortOrder"),
-    searchParams.get("isPrivate"),
-    searchParams.get("isPublic"),
-    searchParams.get("minStars"),
-    searchParams.get("maxStars"),
   ]);
 
   return (
-    <div className="flex gap-5">
-      {/* <Sidebar /> */}
+    <div className="flex items-start gap-5 mb-20">
+      <CButton
+        onClick={() => setIsSidebarOpen(true)}
+        className="lg:hidden fixed bottom-5 left-5 right-5 z-30 rounded-lg"
+      >
+        <FilterIcon />
+        Filters
+      </CButton>
+
+      <Sidebar
+        fetchRepositories={fetchRepositories}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
+
       {!loadingRepositories &&
       (!repositories || repositories.total_count === 0) ? (
         <div className="text-center py-12 flex-5 w-full">

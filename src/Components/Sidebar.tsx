@@ -1,29 +1,23 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
+import CInput from "./CInput";
+import CButton from "./CButton";
+import { ClockIcon, CPUIcon, DeleteIcon, ForkIcon, StarIcon } from "./Icons";
+import { helpers } from "../helpers";
+import CSelect from "./CSelect";
 
-const deleteIcon = (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    fill="currentColor"
-    className="bi bi-trash3 fill-red-500"
-    viewBox="0 0 16 16"
-  >
-    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
-  </svg>
-);
+interface SidebarProps {
+  fetchRepositories: (abortSignal: AbortSignal) => Promise<void>;
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-export default function Sidebar() {
+export default function Sidebar({
+  fetchRepositories,
+  isOpen,
+  onClose,
+}: SidebarProps) {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { checked, id } = e.target;
-    setSearchParams((prev) => {
-      prev.set(id, checked.toString());
-      return prev;
-    });
-  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, id } = e.target;
@@ -33,65 +27,224 @@ export default function Sidebar() {
     });
   };
 
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value, id } = e.target;
+    setSearchParams((prev) => {
+      prev.set(id, value);
+      return prev;
+    });
+  };
+
+  const handleClear = () => {
+    searchParams.delete("minStars");
+    searchParams.delete("maxStars");
+    searchParams.delete("minForks");
+    searchParams.delete("maxForks");
+    searchParams.delete("updatedAt");
+    searchParams.delete("language");
+    setSearchParams(searchParams);
+    fetchRepositories(new AbortController().signal);
+  };
+
   return (
-    <div className="flex-1 w-full bg-primary-light rounded-lg p-5 flex flex-col gap-5">
-      <h2 className="text-xl font-bold text-light flex items-center justify-between gap-5 border-b-2 border-secondary">
-        Filters {deleteIcon}
-      </h2>
+    <>
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
 
-      <div className="flex gap-5">
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="isPrivate"
-            checked={searchParams.get("isPrivate") === "true"}
-            onChange={handleFilterChange}
-          />
-          <label htmlFor="isPrivate">Private</label>
+      <div
+        className={`
+        fixed lg:relative inset-y-0 left-0 z-50 w-full max-w-sm bg-gradient-to-br from-primary-light/75 to-primary 
+        transform transition-transform duration-300 ease-in-out lg:transform-none
+        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        lg:sticky lg:top-5 lg:flex-1 lg:w-full rounded-lg p-5 flex flex-col gap-5
+      `}
+      >
+        <div className="flex items-center justify-between lg:hidden">
+          <h2 className="text-xl font-bold text-light border-b-2 border-secondary pb-2">
+            Filters
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 text-light hover:text-secondary transition-colors"
+            aria-label="Close filters"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="isPublic"
-            checked={searchParams.get("isPublic") === "true"}
-            onChange={handleFilterChange}
+
+        <h2 className="text-xl font-bold text-light  items-center justify-between gap-5 border-b-2 border-secondary lg:flex hidden">
+          Filters{" "}
+          <button
+            type="button"
+            title="Clear filters"
+            className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleClear}
+            disabled={
+              (searchParams.get("language") === "" ||
+                searchParams.get("language") === null) &&
+              (searchParams.get("minStars") === "" ||
+                searchParams.get("minStars") === null) &&
+              (searchParams.get("maxStars") === "" ||
+                searchParams.get("maxStars") === null) &&
+              (searchParams.get("minForks") === "" ||
+                searchParams.get("minForks") === null) &&
+              (searchParams.get("maxForks") === "" ||
+                searchParams.get("maxForks") === null) &&
+              (searchParams.get("updatedAt") === "" ||
+                searchParams.get("updatedAt") === null)
+            }
+          >
+            <DeleteIcon />
+          </button>
+        </h2>
+
+        <div className="flex  flex-col gap-2">
+          <p className=" text-light border-b-2 border-secondary flex items-center justify-between gap-2">
+            Languages
+            {<CPUIcon className="fill-secondary" />}
+          </p>
+          <div className="flex items-center gap-2">
+            <CSelect
+              value={searchParams.get("language") || ""}
+              options={helpers.githubLanguages}
+              onChange={handleSelectChange}
+              id="language"
+            />
+          </div>
+        </div>
+
+        <div className="flex  flex-col gap-2">
+          <p className=" text-light border-b-2 border-secondary flex items-center justify-between gap-2">
+            Stars
+            {<StarIcon className="fill-secondary" />}
+          </p>
+          <div className="flex items-center gap-2">
+            <CInput
+              type="number"
+              placeholder="Min stars"
+              value={searchParams.get("minStars") || ""}
+              id="minStars"
+              onChange={handleInputChange}
+            />
+            <CInput
+              type="number"
+              placeholder="Max stars"
+              value={searchParams.get("maxStars") || ""}
+              id="maxStars"
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+
+        <div className="flex  flex-col gap-2">
+          <p className=" text-light border-b-2 border-secondary flex items-center justify-between gap-2">
+            Forks
+            {<ForkIcon className="fill-secondary" />}
+          </p>
+          <div className="flex items-center gap-2">
+            <CInput
+              type="number"
+              placeholder="Min forks"
+              value={searchParams.get("minForks") || ""}
+              id="minForks"
+              onChange={handleInputChange}
+            />
+            <CInput
+              type="number"
+              placeholder="Max forks"
+              value={searchParams.get("maxForks") || ""}
+              id="maxForks"
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+
+        <div className="flex  flex-col gap-2">
+          <p className=" text-light border-b-2 border-secondary flex items-center justify-between gap-2">
+            Last Updated
+            {<ClockIcon className="fill-secondary" />}
+          </p>
+          <CInput
+            type="date"
+            placeholder="from"
+            value={searchParams.get("updatedAt") || ""}
+            id="updatedAt"
+            onChange={handleInputChange}
+            max={new Date().toISOString().split("T")[0]}
+            min={
+              new Date(new Date().setDate(new Date().getDate() - 20 * 365))
+                .toISOString()
+                .split("T")[0]
+            }
           />
-          <label htmlFor="isPublic">Public</label>
+        </div>
+
+        <div className="flex items-center justify-between gap-5">
+          <CButton
+            className="w-full rounded-lg text-sm !py-1"
+            disabled={
+              (searchParams.get("language") === "" ||
+                searchParams.get("language") === null) &&
+              (searchParams.get("minStars") === "" ||
+                searchParams.get("minStars") === null) &&
+              (searchParams.get("maxStars") === "" ||
+                searchParams.get("maxStars") === null) &&
+              (searchParams.get("minForks") === "" ||
+                searchParams.get("minForks") === null) &&
+              (searchParams.get("maxForks") === "" ||
+                searchParams.get("maxForks") === null) &&
+              (searchParams.get("updatedAt") === "" ||
+                searchParams.get("updatedAt") === null)
+            }
+            onClick={() => {
+              fetchRepositories(new AbortController().signal);
+              if (window.innerWidth < 1024) {
+                onClose();
+              }
+            }}
+          >
+            Apply
+          </CButton>
+          <button
+            type="button"
+            title="Clear filters"
+            className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed md:hidden "
+            onClick={handleClear}
+            disabled={
+              (searchParams.get("language") === "" ||
+                searchParams.get("language") === null) &&
+              (searchParams.get("minStars") === "" ||
+                searchParams.get("minStars") === null) &&
+              (searchParams.get("maxStars") === "" ||
+                searchParams.get("maxStars") === null) &&
+              (searchParams.get("minForks") === "" ||
+                searchParams.get("minForks") === null) &&
+              (searchParams.get("maxForks") === "" ||
+                searchParams.get("maxForks") === null) &&
+              (searchParams.get("updatedAt") === "" ||
+                searchParams.get("updatedAt") === null)
+            }
+          >
+            <DeleteIcon className="scale-[1.3] w-5 h-5" />
+          </button>
         </div>
       </div>
-
-      <div className="flex items-center flex-col gap-2">
-        <input
-          type="number"
-          placeholder="Min stars"
-          id="minStars"
-          defaultValue={searchParams.get("minStars") || ""}
-          onBlur={(e) => {
-            const maxStars = parseInt(
-              searchParams.get("maxStars") || "9999999"
-            );
-            if (parseInt(e.target.value) > maxStars) {
-              return;
-            }
-
-            handleInputChange(e);
-          }}
-        />
-        <input
-          type="number"
-          placeholder="Max stars"
-          id="maxStars"
-          defaultValue={searchParams.get("maxStars") || ""}
-          onBlur={(e) => {
-            const minStars = parseInt(searchParams.get("minStars") || "0");
-            if (parseInt(e.target.value) < minStars) {
-              return;
-            }
-
-            handleInputChange(e);
-          }}
-        />
-      </div>
-    </div>
+    </>
   );
 }

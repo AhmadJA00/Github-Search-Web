@@ -184,3 +184,27 @@ export type queryOBJType = {
   isPrivate?: string;
   isPublic?: string;
 };
+export type InputProps = {
+  type: string;
+  placeholder: string;
+  id: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  label?: string;
+  min?: string;
+  max?: string;
+  value?: string;
+};
+export type SelectOptions = {
+  value: string;
+  label: string;
+};
+export type SelectProps = {
+  options: SelectOptions[];
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  label?: string;
+  id: string;
+  className?: string;
+  value: string;
+  allowClear?: boolean;
+};
