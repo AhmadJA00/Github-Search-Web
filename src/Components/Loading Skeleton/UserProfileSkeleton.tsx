@@ -2,7 +2,7 @@ import React from "react";
 
 const UserProfileSkeleton: React.FC = () => {
   return (
-    <div className="border border-gray rounded-lg animate-pulse">
+    <div className="border border-gray/30 rounded-lg animate-pulse">
       <div className="p-2 md:p-5 flex flex-col md:flex-row gap-5">
         {/* Avatar skeleton - matches responsive sizing */}
         <div className="w-28 md:w-40 h-28 md:h-40 rounded-full bg-gray-300 mx-auto md:mx-0"></div>

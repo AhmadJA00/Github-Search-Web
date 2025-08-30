@@ -20,7 +20,7 @@ const CSelect: React.FC<SelectProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-1 ">
+    <div className={`flex flex-col gap-1 ${className}`}>
       {label && (
         <label htmlFor={id} className="text-sm border-b border-secondary">
           {label}
@@ -29,7 +29,7 @@ const CSelect: React.FC<SelectProps> = ({
       <div className="relative group">
         <select
           value={value}
-          className={`w-86  md:w-52 p-1 px-2  rounded-md border bg-primary border-gray focus:outline-none focus:border-secondary text-sm ${className}`}
+          className={` p-1 px-2  rounded-md border bg-primary border-gray/30 focus:outline-none focus:border-secondary text-sm !w-full`}
           onChange={onChange}
           id={id}
         >

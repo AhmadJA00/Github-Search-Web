@@ -1,6 +1,6 @@
 import { Outlet } from "react-router";
 import { UserDataProvider } from "../hooks/useUserData";
-import Navbar from "../Components/Navbar";
+import Navbar from "../components/Navbar";
 import { ReposDataProvider } from "../hooks/useReposData";
 
 export default function MainLayout() {

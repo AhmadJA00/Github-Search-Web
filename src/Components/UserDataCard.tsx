@@ -90,7 +90,7 @@ type UserCardProps = {
 
 const UserDataCard: React.FC<UserCardProps> = ({ user }) => {
   return (
-    <div className="border border-gray rounded-lg">
+    <div className="border border-gray/30 hover:border-secondary transition-colors duration-200 backdrop-blur-xl rounded-lg">
       <div className="p-2 md:p-5 flex flex-col md:flex-row gap-5">
         <img
           className="w-28 md:w-40 h-28 md:h-40 rounded-full mx-auto md:mx-0"

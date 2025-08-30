@@ -40,13 +40,13 @@
   background-repeat: no-repeat;
   background-position: right bottom;
   background-size: 600px 600px;
-  background-position: right 10% bottom; /* Move it down more */
-  background-attachment: fixed; /* This makes it stay in viewport */
+  background-position: right 10% bottom;
+  background-attachment: fixed;
 }
 
 @media (max-width: 768px) {
   .bg-github-gradient {
     background-size: 350px 350px;
-    background-position: right -200% bottom; /* Move it down more */
+    background-position: right -200% bottom 50%;
   }
 }

@@ -35,7 +35,7 @@ export default function CPagination({ totalItems }: { totalItems: number }) {
           id="per_page"
           value={perPage.toString()}
           onChange={handlePerPageChange}
-          className="w-full"
+          className="!w-full"
           allowClear={false}
           options={[
             { value: "10", label: "10" },

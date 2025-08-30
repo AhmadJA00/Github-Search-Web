@@ -1,23 +1,25 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
-import CInput from "./CInput";
-import CButton from "./CButton";
 import { ClockIcon, CPUIcon, DeleteIcon, ForkIcon, StarIcon } from "./Icons";
 import { helpers } from "../helpers";
+import { useReposData } from "../hooks/useReposData";
 import CSelect from "./CSelect";
+import CInput from "./CInput";
+import CButton from "./CButton";
 
 interface SidebarProps {
   fetchRepositories: (abortSignal: AbortSignal) => Promise<void>;
   isOpen: boolean;
   onClose: () => void;
 }
-
 export default function Sidebar({
   fetchRepositories,
   isOpen,
   onClose,
 }: SidebarProps) {
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const { loadingRepositories } = useReposData();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, id } = e.target;
@@ -60,7 +62,7 @@ export default function Sidebar({
         fixed lg:relative inset-y-0 left-0 z-50 w-full max-w-sm bg-gradient-to-br from-primary-light/75 to-primary 
         transform transition-transform duration-300 ease-in-out lg:transform-none
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        lg:sticky lg:top-5 lg:flex-1 lg:w-full rounded-lg p-5 flex flex-col gap-5
+        lg:sticky lg:top-5 rounded-lg p-2 px-5 lg:flex-1 flex flex-col gap-5
       `}
       >
         <div className="flex items-center justify-between lg:hidden">
@@ -119,9 +121,10 @@ export default function Sidebar({
             Languages
             {<CPUIcon className="fill-secondary" />}
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex  gap-2">
             <CSelect
               value={searchParams.get("language") || ""}
+              className="!flex-1 !w-full"
               options={helpers.githubLanguages}
               onChange={handleSelectChange}
               id="language"
@@ -198,20 +201,7 @@ export default function Sidebar({
         <div className="flex items-center justify-between gap-5">
           <CButton
             className="w-full rounded-lg text-sm !py-1"
-            disabled={
-              (searchParams.get("language") === "" ||
-                searchParams.get("language") === null) &&
-              (searchParams.get("minStars") === "" ||
-                searchParams.get("minStars") === null) &&
-              (searchParams.get("maxStars") === "" ||
-                searchParams.get("maxStars") === null) &&
-              (searchParams.get("minForks") === "" ||
-                searchParams.get("minForks") === null) &&
-              (searchParams.get("maxForks") === "" ||
-                searchParams.get("maxForks") === null) &&
-              (searchParams.get("updatedAt") === "" ||
-                searchParams.get("updatedAt") === null)
-            }
+            disabled={loadingRepositories}
             onClick={() => {
               fetchRepositories(new AbortController().signal);
               if (window.innerWidth < 1024) {

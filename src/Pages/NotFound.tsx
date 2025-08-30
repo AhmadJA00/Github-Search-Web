@@ -1,5 +1,5 @@
 import notFoundVector from "../assets/notFoundVector.png";
-import CButton from "../Components/CButton";
+import CButton from "../components/CButton";
 import { useNavigate } from "react-router-dom";
 
 export default function NotFound() {

@@ -2,13 +2,14 @@ import { useEffect } from "react";
 import { AbortedDeferredError, useSearchParams } from "react-router-dom";
 import { getUser, getRepos } from "../api";
 import { useUserData } from "../hooks/useUserData";
-import UserDataCard from "../Components/UserDataCard";
-import UserProfileSkeleton from "../Components/Loading Skeleton/UserProfileSkeleton";
-import ReposSkeleton from "../Components/Loading Skeleton/ReposSkeleton";
-import RepoCard from "../Components/RepoCard";
-import CPagination from "../Components/CPagination";
+import UserDataCard from "../components/UserDataCard";
+import UserProfileSkeleton from "../components/Loading Skeleton/UserProfileSkeleton";
+import ReposSkeleton from "../components/Loading Skeleton/ReposSkeleton";
+import RepoCard from "../components/RepoCard";
+import CPagination from "../components/CPagination";
 import type { GitHubUser } from "../types";
 import { helpers } from "../helpers";
+import notFoundVector from "../assets/notFoundVector.png";
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -96,16 +97,21 @@ export default function Home() {
   //   }
   // }, [searchParams.get("page"), searchParams.get("per_page")]);
 
-  if (!loading && !user) {
+  if (!loading && !loadingRepos && !user) {
     return (
-      <div className="text-center py-12">
-        <h3 className="text-lg font-medium text-light mb-2">
-          No repositories found
-        </h3>
-        <p className="text-gray">
+      <div className="text-center py-12 mx-auto space-y-5">
+        {search && (
+          <img
+            src={notFoundVector}
+            alt="No User found"
+            className="w-96 mx-auto"
+          />
+        )}
+        <h3 className="text-lg font-medium text-light mb-2">No User found</h3>
+        <p className="text-gray text-center text-sm md:text-base">
           {search
-            ? `No repositories found for "${search}"`
-            : "Search for repositories to get started"}
+            ? `No User found for "${search}"`
+            : "Search for User to get started"}
         </p>
       </div>
     );

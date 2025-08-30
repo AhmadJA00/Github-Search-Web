@@ -43,14 +43,14 @@ const CTh: React.FC<THProps> = ({ children, sortKey }) => {
       }`}
       data-sort-key={sortKey}
     >
-      <span className="flex items-center gap-4">
+      <span className="flex items-center gap-1">
         {children}
         {sortKey && (
           <div className="flex">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
+              width="14"
+              height="14"
               fill="currentColor"
               className={`bi bi-arrow-up ${
                 currentSortBy === sortKey && currentSortOrder === "asc"
@@ -66,8 +66,8 @@ const CTh: React.FC<THProps> = ({ children, sortKey }) => {
             </svg>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
+              width="14"
+              height="14"
               fill="currentColor"
               className={`bi bi-arrow-down ${
                 currentSortBy === sortKey && currentSortOrder === "desc"

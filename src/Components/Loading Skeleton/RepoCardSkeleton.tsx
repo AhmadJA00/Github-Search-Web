@@ -2,7 +2,7 @@ import React from "react";
 
 const RepoCardSkeleton: React.FC = () => {
   return (
-    <div className="border border-gray rounded-lg p-2 md:p-5 animate-pulse">
+    <div className="border border-gray/30 rounded-lg p-2 md:p-5 animate-pulse">
       <div className="flex flex-col gap-5">
         {/* Header section with title, full name, date, and badge */}
         <div className="flex items-start justify-between gap-2">

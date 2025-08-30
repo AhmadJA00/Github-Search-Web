@@ -56,10 +56,7 @@ export async function getAllRepositories(
 ): Promise<GitHubSearchResponse> {
   const searchParams = new URLSearchParams(window.location.search);
 
-  let query = username ? `user:${username}` : "";
-
-  const isPrivate = searchParams.get("isPrivate");
-  const isPublic = searchParams.get("isPublic");
+  const searchBy = searchParams.get("searchBy");
   const minStars = searchParams.get("minStars");
   const maxStars = searchParams.get("maxStars");
   const minForks = searchParams.get("minForks");
@@ -67,20 +64,22 @@ export async function getAllRepositories(
   const updatedAt = searchParams.get("updatedAt");
   const language = searchParams.get("language");
 
-  if (isPrivate === "true") {
-    query += query ? " is:private" : "is:private";
-  }
+  let query = ``;
 
-  if (isPublic === "true") {
-    query += query ? " is:public" : "is:public";
+  if (searchBy === "repos") {
+    query += `${username}`;
+  } else if (searchBy === "orgs") {
+    query += `org:${username}`;
+  } else {
+    query += `user:${username}`;
   }
 
   if (minStars && !maxStars) {
-    query += ` stars:<=${minStars}`;
+    query += ` stars:>=${minStars}`;
   }
 
   if (maxStars && !minStars) {
-    query += ` stars:>=${maxStars}`;
+    query += ` stars:<=${maxStars}`;
   }
 
   if (minStars && maxStars) {
@@ -88,11 +87,11 @@ export async function getAllRepositories(
   }
 
   if (minForks && !maxForks) {
-    query += ` forks:<=${minForks}`;
+    query += ` forks:>=${minForks}`;
   }
 
   if (maxForks && !minForks) {
-    query += ` forks:>=${maxForks}`;
+    query += ` forks:<=${maxForks}`;
   }
 
   if (minForks && maxForks) {

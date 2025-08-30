@@ -1,9 +1,9 @@
 import React from "react";
-import CButton from "./CButton";
 import { useSearchParams } from "react-router-dom";
 import { useDebounce } from "../hooks/useDebounce";
 import { useUserData } from "../hooks/useUserData";
 import { useReposData } from "../hooks/useReposData";
+import CButton from "./CButton";
 
 export default function SearchBar({ className }: { className?: string }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -55,7 +55,7 @@ export default function SearchBar({ className }: { className?: string }) {
   return (
     <form
       onSubmit={handleSearchOnEnter}
-      className={`flex border border-gray/75 rounded-lg hover:border-gray transition-all duration-200 group ${className}`}
+      className={`flex border border-gray/30 rounded-lg hover:border-gray/75 transition-all duration-200 group ${className}`}
     >
       <input
         value={search}
@@ -64,12 +64,12 @@ export default function SearchBar({ className }: { className?: string }) {
         placeholder={warningText || "Search Users"}
         className={`flex-1 bg-primary px-2 md:px-5 py-2 placeholder:text-gray/75 w-full text-xs md:text-base
                     outline-none   transition-all duration-200 
-                    rounded-s-lg border-e border-gray/75 group-hover:border-gray
+                    rounded-s-lg border-e border-gray/30 group-hover:border-gray
                     ${warningText ? "placeholder:text-red-500" : ""}`}
       />
       <CButton
         disabled={loading || loadingRepos || loadingRepositories}
-        className="rounded-e-lg md:hidden "
+        className="rounded-e-lg"
         icon={
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -1,5 +1,5 @@
-import SearchBar from "./SearchBar";
 import { Link, useLocation } from "react-router-dom";
+import SearchBar from "./SearchBar";
 
 export default function Navbar() {
   const { pathname } = useLocation();
@@ -15,7 +15,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className=" bg-primary-light rounded-lg p-1 md:py-3 md:px-5 flex items-center justify-between gap-2 md:gap-5">
+    <nav className="  bg-gradient-to-tl from-primary-light/75 to-primary  rounded-lg p-1 md:py-2 md:px-5 flex items-center justify-between gap-2 md:gap-5">
       <SearchBar className="flex-2 md:flex-3" />
       <div className="flex-1 flex items-center justify-center gap-2 md:gap-5">
         {pages.map((page) => (
