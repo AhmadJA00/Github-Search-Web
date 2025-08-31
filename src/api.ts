@@ -50,8 +50,8 @@ export async function getRepos(
   }
 }
 
-export async function getAllRepositories(
-  username?: string,
+export async function getRepositories(
+  searchKey?: string,
   signal?: AbortSignal
 ): Promise<GitHubSearchResponse> {
   const searchParams = new URLSearchParams(window.location.search);
@@ -67,13 +67,14 @@ export async function getAllRepositories(
   let query = ``;
 
   if (searchBy === "repos") {
-    query += `${username}`;
+    query += `${searchKey}`;
   } else if (searchBy === "orgs") {
-    query += `org:${username}`;
+    query += `org:${searchKey}`;
   } else {
-    query += `user:${username}`;
+    query += `user:${searchKey}`;
   }
 
+  query += ` fork:true+archived:true`;
   if (minStars && !maxStars) {
     query += ` stars:>=${minStars}`;
   }
@@ -110,8 +111,8 @@ export async function getAllRepositories(
     page: searchParams.get("page") || "1",
     per_page: searchParams.get("per_page") || "10",
     q: query,
-    sort: searchParams.get("sortBy") || "",
-    order: searchParams.get("sortOrder") || "",
+    sort: searchParams.get("sort") || "",
+    order: searchParams.get("order") || "",
   };
 
   const urlSearchParams = helpers.queryValidation(queryOBJ);

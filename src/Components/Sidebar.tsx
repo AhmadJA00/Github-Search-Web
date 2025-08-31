@@ -1,6 +1,13 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
-import { ClockIcon, CPUIcon, DeleteIcon, ForkIcon, StarIcon } from "./Icons";
+import {
+  ClockIcon,
+  CloseIcon,
+  CPUIcon,
+  DeleteIcon,
+  ForkIcon,
+  StarIcon,
+} from "./Icons";
 import { helpers } from "../helpers";
 import { useReposData } from "../hooks/useReposData";
 import CSelect from "./CSelect";
@@ -74,19 +81,7 @@ export default function Sidebar({
             className="p-2 text-light hover:text-secondary transition-colors"
             aria-label="Close filters"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <CloseIcon />
           </button>
         </div>
 
@@ -201,7 +196,7 @@ export default function Sidebar({
         <div className="flex items-center justify-between gap-5">
           <CButton
             className="w-full rounded-lg text-sm !py-1"
-            disabled={loadingRepositories}
+            disabled={loadingRepositories || !searchParams.get("search")}
             onClick={() => {
               fetchRepositories(new AbortController().signal);
               if (window.innerWidth < 1024) {

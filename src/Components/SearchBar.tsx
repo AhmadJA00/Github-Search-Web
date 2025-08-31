@@ -1,21 +1,33 @@
 import React from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { useDebounce } from "../hooks/useDebounce";
 import { useUserData } from "../hooks/useUserData";
 import { useReposData } from "../hooks/useReposData";
 import CButton from "./CButton";
+import { SearchIcon } from "./Icons";
 
 export default function SearchBar({ className }: { className?: string }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { pathname } = useLocation();
   const [search, setSearch] = React.useState(searchParams.get("search") || "");
   const [warningText, setWarningText] = React.useState("");
   const debouncedSearch = useDebounce(search, 1000);
   const { loading, loadingRepos } = useUserData();
   const { loadingRepositories } = useReposData();
 
+  const getWarningText = () => {
+    if (searchParams.get("searchBy") === "repos") {
+      return "Please enter a repository name to search";
+    } else if (searchParams.get("searchBy") === "orgs") {
+      return "Please enter an organization name to search";
+    } else {
+      return "Please enter a username to search";
+    }
+  };
+
   const handleSearchClick = () => {
     if (search.trim() === "") {
-      setWarningText("Please enter a username to search");
+      setWarningText(getWarningText());
       return;
     }
     setWarningText("");
@@ -25,7 +37,7 @@ export default function SearchBar({ className }: { className?: string }) {
   };
   const handleSearchOnEnter = (e: React.FormEvent<HTMLFormElement>) => {
     if (search.trim() === "") {
-      setWarningText("Please enter a username to search");
+      setWarningText(getWarningText());
       return;
     }
     setWarningText("");
@@ -61,7 +73,17 @@ export default function SearchBar({ className }: { className?: string }) {
         value={search}
         onChange={handleSearchChange}
         type="text"
-        placeholder={warningText || "Search Users"}
+        placeholder={
+          warningText
+            ? warningText
+            : pathname === "/"
+            ? "Search Users"
+            : searchParams.get("searchBy") === "repos"
+            ? "Search By Repository's Name"
+            : searchParams.get("searchBy") === "orgs"
+            ? "Search By Organizations"
+            : "Search By Users"
+        }
         className={`flex-1 bg-primary px-2 md:px-5 py-2 placeholder:text-gray/75 w-full text-xs md:text-base
                     outline-none   transition-all duration-200 
                     rounded-s-lg border-e border-gray/30 group-hover:border-gray
@@ -70,18 +92,7 @@ export default function SearchBar({ className }: { className?: string }) {
       <CButton
         disabled={loading || loadingRepos || loadingRepositories}
         className="rounded-e-lg"
-        icon={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-search"
-            viewBox="0 0 16 16"
-          >
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-          </svg>
-        }
+        icon={<SearchIcon />}
         onClick={handleSearchClick}
       >
         <span className="hidden md:block">Search</span>

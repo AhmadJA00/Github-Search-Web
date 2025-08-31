@@ -47,7 +47,10 @@ export const helpers = {
     try {
       localStorage.setItem(
         key,
-        JSON.stringify({ data, storedDate: new Date().toISOString() })
+        JSON.stringify({
+          data,
+          storedDate: new Date().toISOString(),
+        })
       );
       console.log("data stored in local storage");
     } catch (error) {

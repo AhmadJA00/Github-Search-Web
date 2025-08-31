@@ -1,9 +1,14 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
 import CSelect from "./CSelect";
+import { useReposData } from "../hooks/useReposData";
+import { useUserData } from "../hooks/useUserData";
+import { NextIcon, PreviousIcon } from "./Icons";
 
 export default function CPagination({ totalItems }: { totalItems: number }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { loadingRepositories } = useReposData();
+  const { loadingRepos } = useUserData();
 
   const [currentPage, setCurrentPage] = React.useState(
     parseInt(searchParams.get("page") || "1")
@@ -49,39 +54,25 @@ export default function CPagination({ totalItems }: { totalItems: number }) {
       <div className="text-center text-gray flex items-center justify-center gap-2">
         <button
           type="button"
-          disabled={currentPage === 1}
+          disabled={currentPage === 1 || loadingRepositories || loadingRepos}
           className="text-white px-4 py-2 rounded-md disabled:opacity-50 flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed text-xs md:text-sm"
           onClick={handlePreviousPage}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-caret-left-fill md:scale-[1.2]"
-            viewBox="0 0 16 16"
-          >
-            <path d="M10 12.796V3.204L4.519 8zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753" />
-          </svg>
+          <PreviousIcon className="md:scale-[1.2]" />
           Previous
         </button>
         <button
           type="button"
-          disabled={currentPage === Math.ceil((totalItems || 0) / perPage)}
+          disabled={
+            currentPage === Math.ceil((totalItems || 0) / perPage) ||
+            loadingRepositories ||
+            loadingRepos
+          }
           className="text-white px-4 py-2 rounded-md disabled:opacity-50 flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed text-xs md:text-sm"
           onClick={handleNextPage}
         >
           Next
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-caret-right md:scale-[1.2] "
-            viewBox="0 0 16 16"
-          >
-            <path d="M6 12.796V3.204L11.481 8zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753" />
-          </svg>
+          <NextIcon className="md:scale-[1.2]" />
         </button>
       </div>
       <div className="text-center text-gray flex items-center justify-center gap-2 text-xs md:text-sm">

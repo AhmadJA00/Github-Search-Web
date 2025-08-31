@@ -1,5 +1,5 @@
 import React from "react";
-import { getAllRepositories } from "../api";
+import { getRepositories } from "../api";
 import { useSearchParams } from "react-router-dom";
 import CPagination from "../Components/CPagination";
 import RepositoryTable from "../Components/RepositoryTable";
@@ -10,6 +10,7 @@ import notFoundVector from "../assets/notFoundVector.png";
 import CButton from "../Components/CButton";
 import { FilterIcon } from "../Components/Icons";
 import CSelect from "../Components/CSelect";
+import RepoCardSkeleton from "../Components/Loading Skeleton/RepoCardSkeleton";
 
 export default function Repositories() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,7 +27,7 @@ export default function Repositories() {
     try {
       if (!search) return;
       setLoadingRepositories(true);
-      const data = await getAllRepositories(search, abortSignal);
+      const data = await getRepositories(search, abortSignal);
       setRepositories(data);
     } catch (error) {
       setRepositories(null);
@@ -52,8 +53,8 @@ export default function Repositories() {
     search,
     searchParams.get("page"),
     searchParams.get("per_page"),
-    searchParams.get("sortBy"),
-    searchParams.get("sortOrder"),
+    searchParams.get("sort"),
+    searchParams.get("order"),
     searchParams.get("searchBy"),
   ]);
 
@@ -117,7 +118,14 @@ export default function Repositories() {
         ) : (
           <div className="space-y-5 flex-4 w-full">
             {loadingRepositories ? (
-              <RepositoryTableSkeleton count={8} />
+              <>
+                <span className="hidden md:block">
+                  <RepositoryTableSkeleton />
+                </span>
+                <span className="block md:hidden">
+                  <RepoCardSkeleton />
+                </span>
+              </>
             ) : (
               <RepositoryTable repositories={repositories?.items || []} />
             )}

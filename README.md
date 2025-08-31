@@ -18,8 +18,8 @@ A React + TypeScript web application to search GitHub users and repositories usi
 
 - **Repositories Search**
 
-  - Search repositories by username
-  - View details: name, description, stars, forks, issues, language
+  - Search repositories by username, Repository Name, Organization name
+  - View details: name, description, stars, forks, language
 
 - **Advanced Filtering**
 
@@ -28,8 +28,9 @@ A React + TypeScript web application to search GitHub users and repositories usi
 
 - **Performance & UX Enhancements**
 
-  - **Catch User Data** in local storage to reduce unnecessary API calls (valid for 1 hour)
+  - **Catch User Data & User Repositories** in local storage to reduce unnecessary API calls (valid for 1 hour)
   - **AbortController** to cancel API requests when components unmount
+  - **Memoization** to prevent unnecessary renders `UserDataCard, RepoCard, UserReposCard, CSelect, CInput, CButton`
   - Loading states & error handling (user not found, API errors, etc.)
   - Fully **responsive design** with Tailwind CSS
 
@@ -54,10 +55,10 @@ A React + TypeScript web application to search GitHub users and repositories usi
 ```
 src/
  ├── assets/           # Store static assets
- ├── components/       # Reusable UI components
+ ├── Components/       # Reusable UI components
  ├── hooks/            # Custom hooks (useUserData, useRepoData, useDebounce)
- ├── layouts/          # shared Layout (MainLayout)
- ├── pages/            # Main pages (Home, Repositories)
+ ├── Layouts/          # shared Layout (MainLayout)
+ ├── Pages/            # Main pages (Home, Repositories)
  ├── api.ts/           # API calls
  ├── App.tsx           # Root component
  ├── types.ts          # TypeScript types/interfaces

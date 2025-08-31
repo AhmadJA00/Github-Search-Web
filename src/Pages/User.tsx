@@ -7,9 +7,10 @@ import { helpers } from "../helpers";
 import notFoundVector from "../assets/notFoundVector.png";
 import UserProfileSkeleton from "../Components/Loading Skeleton/UserProfileSkeleton";
 import UserDataCard from "../Components/UserDataCard";
-import ReposSkeleton from "../Components/Loading Skeleton/ReposSkeleton";
-import RepoCard from "../Components/RepoCard";
+
 import CPagination from "../Components/CPagination";
+import UserRepoCard from "../Components/UserReposCard";
+import UserRepoCardSkeleton from "../Components/Loading Skeleton/UserRepoCardSkeleton";
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,7 +32,13 @@ export default function Home() {
   ) => {
     try {
       setLoadingRepos(true);
-      const reposData = await getRepos(userData.repos_url, abortSignal);
+      const reposData = await getRepos(`${userData.repos_url}`, abortSignal);
+      helpers.storeUserDataInLocalStorage(
+        `${search || "AhmadJA00"}_repos_perPage_${
+          searchParams.get("per_page") || "10"
+        }_page_${searchParams.get("page") || "1"}`,
+        reposData
+      );
       setRepos(reposData);
     } catch (error) {
       if (error instanceof AbortedDeferredError) {
@@ -44,16 +51,25 @@ export default function Home() {
 
   const fetchData = async (abortSignal?: AbortSignal) => {
     try {
+      setLoading(true);
       setUser(null);
       setRepos(null);
-      setLoading(true);
 
       const catchedUser = helpers.getDataFromLocalStorage(
         `${search || "AhmadJA00"}_data`
       );
+      const catchedRepos = helpers.getDataFromLocalStorage(
+        `${search || "AhmadJA00"}_repos_perPage_${
+          searchParams.get("per_page") || "10"
+        }_page_${searchParams.get("page") || "1"}`
+      );
       if (catchedUser) {
         setUser(catchedUser);
-        fetchRepos(catchedUser, abortSignal);
+        if (catchedRepos) {
+          setRepos(catchedRepos);
+        } else {
+          fetchRepos(catchedUser, abortSignal);
+        }
         return;
       }
       searchParams.set("page", "1");
@@ -64,7 +80,12 @@ export default function Home() {
         `${search || "AhmadJA00"}_data`,
         userData
       );
-      fetchRepos(userData, abortSignal);
+
+      if (catchedRepos) {
+        setRepos(catchedRepos);
+      } else {
+        fetchRepos(userData, abortSignal);
+      }
       setUser(userData);
     } catch (error) {
       if (error instanceof AbortedDeferredError) {
@@ -84,18 +105,6 @@ export default function Home() {
       abortController.abort();
     };
   }, [searchParams.get("page"), searchParams.get("per_page"), search]);
-
-  // useEffect(() => {
-  //   if (user?.public_repos) {
-  //     const abortController = new AbortController();
-
-  //     fetchRepos(user, abortController.signal);
-
-  //     return () => {
-  //       abortController.abort();
-  //     };
-  //   }
-  // }, [searchParams.get("page"), searchParams.get("per_page")]);
 
   if (!loading && !loadingRepos && !user) {
     return (
@@ -126,7 +135,7 @@ export default function Home() {
       )}
 
       {loadingRepos ? (
-        <ReposSkeleton count={4} />
+        <UserRepoCardSkeleton />
       ) : (
         <>
           {repos?.length && repos.length > 0 ? (
@@ -139,7 +148,7 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2  gap-5">
                 {repos?.map((repo) => (
-                  <RepoCard repo={repo} key={repo.id} />
+                  <UserRepoCard repo={repo} key={repo.id} />
                 ))}
               </div>
             </>

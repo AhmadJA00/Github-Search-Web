@@ -5,14 +5,14 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import MainLayout from "./Layouts/MainLayout";
-import Home from "./Pages/Home";
+import User from "./Pages/User";
 import Repositories from "./Pages/Repositories";
 import NotFound from "./Pages/NotFound";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<MainLayout />}>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<User />} />
       <Route path="/repositories" element={<Repositories />} />
       <Route path="*" element={<NotFound />} />
     </Route>

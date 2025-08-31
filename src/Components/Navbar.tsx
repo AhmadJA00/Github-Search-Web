@@ -5,7 +5,7 @@ export default function Navbar() {
   const { pathname } = useLocation();
   const pages = [
     {
-      name: "Home",
+      name: "Users",
       path: "/",
     },
     {

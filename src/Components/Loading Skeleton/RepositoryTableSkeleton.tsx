@@ -1,12 +1,4 @@
-import React from "react";
-
-interface RepositoryTableSkeletonProps {
-  count?: number;
-}
-
-const RepositoryTableSkeleton: React.FC<RepositoryTableSkeletonProps> = ({
-  count = 5,
-}) => {
+const RepositoryTableSkeleton = () => {
   return (
     <div className="overflow-hidden border border-gray/30 rounded-lg flex-4 w-full">
       <table className="min-w-full bg-primary  ">
@@ -23,7 +15,7 @@ const RepositoryTableSkeleton: React.FC<RepositoryTableSkeletonProps> = ({
           </tr>
         </thead>
         <tbody className="bg-primary divide-y divide-gray/20">
-          {Array.from({ length: count }).map((_, index) => (
+          {[1, 2, 3, 4, 5].map((index) => (
             <tr key={index} className="animate-pulse">
               <td className="px-6 py-4">
                 <div className="flex items-center">

@@ -2,7 +2,6 @@ import axios from "axios";
 
 const baseURL = import.meta.env.VITE_BASE_API;
 const token = import.meta.env.VITE_GITHUB_API_TOKEN;
-console.log(token);
 
 export const HTTP = axios.create({
   baseURL: baseURL,
