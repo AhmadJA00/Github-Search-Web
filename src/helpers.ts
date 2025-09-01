@@ -52,7 +52,6 @@ export const helpers = {
           storedDate: new Date().toISOString(),
         })
       );
-      console.log("data stored in local storage");
     } catch (error) {
       console.error(error);
     }

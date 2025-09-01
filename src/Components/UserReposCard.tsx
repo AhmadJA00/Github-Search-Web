@@ -74,15 +74,15 @@ const UserRepoCard: React.FC<UserRepoCardProps> = memo(({ repo }) => {
             </div>
           )}
           <div className="flex items-center gap-1">
-            {<StarIcon />}
+            {<StarIcon className="fill-secondary" />}
             <span>{repo.stargazers_count} stars</span>
           </div>
           <div className="flex items-center gap-1">
-            {<ForkIcon />}
+            {<ForkIcon className="fill-secondary" />}
             <span>{repo.forks_count} forks</span>
           </div>
           <div className="flex items-center gap-1">
-            {<IssueIcon />}
+            {<IssueIcon className="fill-secondary" />}
             <span>{repo.open_issues_count} issues</span>
           </div>
         </div>

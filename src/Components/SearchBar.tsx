@@ -8,21 +8,33 @@ import { SearchIcon } from "./Icons";
 
 export default function SearchBar({ className }: { className?: string }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const searchBy = searchParams.get("searchBy") || "repos";
   const { pathname } = useLocation();
   const [search, setSearch] = React.useState(searchParams.get("search") || "");
   const [warningText, setWarningText] = React.useState("");
+  const [isManualSearch, setIsManualSearch] = React.useState(false);
   const debouncedSearch = useDebounce(search, 1000);
   const { loading, loadingRepos } = useUserData();
   const { loadingRepositories } = useReposData();
 
   const getWarningText = () => {
-    if (searchParams.get("searchBy") === "repos") {
-      return "Please enter a repository name to search";
-    } else if (searchParams.get("searchBy") === "orgs") {
-      return "Please enter an organization name to search";
-    } else {
-      return "Please enter a username to search";
-    }
+    return searchBy === "users"
+      ? "Please enter a username to search"
+      : searchBy === "orgs"
+      ? "Please enter an organization name to search"
+      : "Please enter a repository name to search";
+  };
+
+  const getPlaceholderText = () => {
+    return warningText
+      ? warningText
+      : pathname === "/"
+      ? "Search Users"
+      : searchBy === "users"
+      ? "Search By Users"
+      : searchBy === "orgs"
+      ? "Search By Organizations"
+      : "Search By Repository's Name";
   };
 
   const handleSearchClick = () => {
@@ -31,10 +43,12 @@ export default function SearchBar({ className }: { className?: string }) {
       return;
     }
     setWarningText("");
+    setIsManualSearch(true);
     searchParams.set("search", search);
     searchParams.set("page", "1");
     setSearchParams(searchParams);
   };
+
   const handleSearchOnEnter = (e: React.FormEvent<HTMLFormElement>) => {
     if (search.trim() === "") {
       setWarningText(getWarningText());
@@ -46,24 +60,30 @@ export default function SearchBar({ className }: { className?: string }) {
   };
 
   React.useEffect(() => {
-    if (debouncedSearch.trim() !== "") {
-      searchParams.set("search", debouncedSearch);
-    } else {
-      searchParams.delete("search");
-    }
-    searchParams.set("page", "1");
+    if (!isManualSearch) {
+      const newSearchParams = new URLSearchParams(window.location.search);
 
-    setSearchParams(searchParams);
-  }, [debouncedSearch]);
+      if (debouncedSearch.trim() !== "") {
+        newSearchParams.set("search", debouncedSearch);
+      } else {
+        newSearchParams.delete("search");
+      }
+      newSearchParams.set("page", "1");
+
+      setSearchParams(newSearchParams);
+    }
+  }, [debouncedSearch, setSearchParams, isManualSearch]);
+
+  React.useEffect(() => {
+    setWarningText("");
+  }, [pathname, searchBy]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setWarningText("");
     setSearch(e.target.value);
+    setIsManualSearch(false);
   };
 
-  React.useEffect(() => {
-    setSearch(searchParams.get("search") || "");
-  }, [searchParams]);
   return (
     <form
       onSubmit={handleSearchOnEnter}
@@ -73,17 +93,7 @@ export default function SearchBar({ className }: { className?: string }) {
         value={search}
         onChange={handleSearchChange}
         type="text"
-        placeholder={
-          warningText
-            ? warningText
-            : pathname === "/"
-            ? "Search Users"
-            : searchParams.get("searchBy") === "repos"
-            ? "Search By Repository's Name"
-            : searchParams.get("searchBy") === "orgs"
-            ? "Search By Organizations"
-            : "Search By Users"
-        }
+        placeholder={getPlaceholderText()}
         className={`flex-1 bg-primary px-2 md:px-5 py-2 placeholder:text-gray/75 w-full text-xs md:text-base
                     outline-none   transition-all duration-200 
                     rounded-s-lg border-e border-gray/30 group-hover:border-gray

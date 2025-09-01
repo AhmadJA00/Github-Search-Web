@@ -1,10 +1,9 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { AbortedDeferredError, useSearchParams } from "react-router-dom";
 import { getUser, getRepos } from "../api";
 import { useUserData } from "../hooks/useUserData";
 import type { GitHubUser } from "../types";
 import { helpers } from "../helpers";
-import notFoundVector from "../assets/notFoundVector.png";
 import UserProfileSkeleton from "../Components/Loading Skeleton/UserProfileSkeleton";
 import UserDataCard from "../Components/UserDataCard";
 
@@ -15,6 +14,8 @@ import UserRepoCardSkeleton from "../Components/Loading Skeleton/UserRepoCardSke
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search");
+  const page = searchParams.get("page");
+  const per_page = searchParams.get("per_page");
   const {
     user,
     repos,
@@ -26,75 +27,93 @@ export default function Home() {
     setLoadingRepos,
   } = useUserData();
 
-  const fetchRepos = async (
-    userData: GitHubUser,
-    abortSignal?: AbortSignal
-  ) => {
-    try {
-      setLoadingRepos(true);
-      const reposData = await getRepos(`${userData.repos_url}`, abortSignal);
-      helpers.storeUserDataInLocalStorage(
-        `${search || "AhmadJA00"}_repos_perPage_${
-          searchParams.get("per_page") || "10"
-        }_page_${searchParams.get("page") || "1"}`,
-        reposData
-      );
-      setRepos(reposData);
-    } catch (error) {
-      if (error instanceof AbortedDeferredError) {
-        console.error(error);
+  const fetchRepos = React.useCallback(
+    async (userData: GitHubUser, abortSignal?: AbortSignal) => {
+      try {
+        setLoadingRepos(true);
+        const reposData = await getRepos(`${userData.repos_url}`, abortSignal);
+
+        const reposStorageKey = `${search || "AhmadJA00"}_repos_perPage_${
+          per_page || "10"
+        }_page_${page || "1"}`;
+
+        helpers.storeUserDataInLocalStorage(reposStorageKey, reposData);
+        setRepos(reposData);
+      } catch (error) {
+        if (error instanceof AbortedDeferredError) {
+          console.error(error);
+        } else {
+          console.error("Failed to fetch repositories:", error);
+        }
+      } finally {
+        setLoadingRepos(false);
       }
-    } finally {
-      setLoadingRepos(false);
-    }
-  };
+    },
+    [search, per_page, page, setRepos, setLoadingRepos]
+  );
 
-  const fetchData = async (abortSignal?: AbortSignal) => {
-    try {
-      setLoading(true);
-      setUser(null);
-      setRepos(null);
+  const fetchData = React.useCallback(
+    async (abortSignal?: AbortSignal) => {
+      try {
+        setLoading(true);
+        setUser(null);
+        setRepos(null);
 
-      const catchedUser = helpers.getDataFromLocalStorage(
-        `${search || "AhmadJA00"}_data`
-      );
-      const catchedRepos = helpers.getDataFromLocalStorage(
-        `${search || "AhmadJA00"}_repos_perPage_${
-          searchParams.get("per_page") || "10"
-        }_page_${searchParams.get("page") || "1"}`
-      );
-      if (catchedUser) {
-        setUser(catchedUser);
+        const userStorageKey = `${search || "AhmadJA00"}_data`;
+        const reposStorageKey = `${search || "AhmadJA00"}_repos_perPage_${
+          per_page || "10"
+        }_page_${page || "1"}`;
+
+        const catchedUser = helpers.getDataFromLocalStorage(userStorageKey);
+        const catchedRepos = helpers.getDataFromLocalStorage(reposStorageKey);
+
+        if (catchedUser) {
+          setUser(catchedUser);
+          if (catchedRepos) {
+            setRepos(catchedRepos);
+          } else {
+            fetchRepos(catchedUser, abortSignal);
+          }
+          return;
+        }
+
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set("page", "1");
+        newSearchParams.set("per_page", "10");
+        setSearchParams(newSearchParams);
+
+        const userData = await getUser(search || "", abortSignal);
+
+        setUser(userData);
+
+        helpers.storeUserDataInLocalStorage(userStorageKey, userData);
+
         if (catchedRepos) {
           setRepos(catchedRepos);
         } else {
-          fetchRepos(catchedUser, abortSignal);
+          fetchRepos(userData, abortSignal);
         }
-        return;
+      } catch (error) {
+        if (error instanceof AbortedDeferredError) {
+          console.error(error);
+        } else {
+          console.error("Failed to fetch user data:", error);
+        }
+      } finally {
+        setLoading(false);
       }
-      searchParams.set("page", "1");
-      searchParams.set("per_page", "10");
-      setSearchParams(searchParams);
-      const userData = await getUser(search || "", abortSignal);
-      helpers.storeUserDataInLocalStorage(
-        `${search || "AhmadJA00"}_data`,
-        userData
-      );
-
-      if (catchedRepos) {
-        setRepos(catchedRepos);
-      } else {
-        fetchRepos(userData, abortSignal);
-      }
-      setUser(userData);
-    } catch (error) {
-      if (error instanceof AbortedDeferredError) {
-        console.error(error);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [
+      search,
+      page,
+      per_page,
+      setUser,
+      setRepos,
+      setLoading,
+      fetchRepos,
+      setSearchParams,
+    ]
+  );
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -104,18 +123,11 @@ export default function Home() {
     return () => {
       abortController.abort();
     };
-  }, [searchParams.get("page"), searchParams.get("per_page"), search]);
+  }, [page, per_page, search, fetchData]);
 
   if (!loading && !loadingRepos && !user) {
     return (
       <div className="text-center py-12 mx-auto space-y-5">
-        {search && (
-          <img
-            src={notFoundVector}
-            alt="No User found"
-            className="w-96 mx-auto"
-          />
-        )}
         <h3 className="text-lg font-medium text-light mb-2">No User found</h3>
         <p className="text-gray text-center text-sm md:text-base">
           {search

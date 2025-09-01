@@ -66,15 +66,14 @@ export async function getRepositories(
 
   let query = ``;
 
-  if (searchBy === "repos") {
-    query += `${searchKey}`;
+  if (searchBy === "users") {
+    query += `user:${searchKey}`;
   } else if (searchBy === "orgs") {
     query += `org:${searchKey}`;
   } else {
-    query += `user:${searchKey}`;
+    query += `${searchKey}`;
   }
 
-  query += ` fork:true+archived:true`;
   if (minStars && !maxStars) {
     query += ` stars:>=${minStars}`;
   }
