@@ -31,9 +31,9 @@ const UserDataCard: React.FC<UserCardProps> = memo(({ user }) => {
           >
             {user.name}
           </a>
-          <div className="flex flex-col-reverse lg:flex-row text-center md:text-justify items-center md:items-start lg:items-center justify-center md:justify-start lg:gap-2 text-sm lg:text-base text-gray col-span-2 md:col-span-3 ">
+          <div className="flex flex-col-reverse md:flex-row text-center md:text-justify items-center md:items-start lg:items-center justify-center md:justify-start md:gap-2 text-sm lg:text-base text-gray col-span-2 md:col-span-3 ">
             <p>{user.bio}</p>
-            <span className="text-secondary hidden lg:block">•</span>
+            <span className="text-secondary hidden md:block">•</span>
             <p>{user.login}</p>
           </div>
           <div className="flex items-center gap-1 md:gap-3 text-[10px] lg:text-base text-gray">

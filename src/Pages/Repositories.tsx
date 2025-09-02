@@ -20,7 +20,6 @@ export default function Repositories() {
   const searchBy = searchParams.get("searchBy") || "repos";
   const order = searchParams.get("order");
   const sort = searchParams.get("sort");
-
   const {
     repositories,
     setRepositories,
@@ -48,6 +47,7 @@ export default function Repositories() {
     },
     [search, setRepositories, setLoadingRepositories]
   );
+
   React.useEffect(() => {
     const abortController = new AbortController();
 
@@ -60,16 +60,7 @@ export default function Repositories() {
     return () => {
       abortController.abort();
     };
-  }, [
-    search,
-    page,
-    per_page,
-    searchBy,
-    order,
-    sort,
-    fetchRepositories,
-    setRepositories,
-  ]);
+  }, [search, page, per_page, searchBy, order, sort]);
 
   return (
     <div className="flex items-start gap-5 mb-20">
@@ -91,7 +82,7 @@ export default function Repositories() {
           <div className="flex  items-center gap-2">
             <h2 className="text-sm font-bold text-light">Search By</h2>
             <CSelect
-              value={searchBy || "user"}
+              value={searchBy || "repos"}
               id="searchBy"
               allowClear={false}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {

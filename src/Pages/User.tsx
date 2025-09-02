@@ -87,12 +87,7 @@ export default function Home() {
         setUser(userData);
 
         helpers.storeUserDataInLocalStorage(userStorageKey, userData);
-
-        if (catchedRepos) {
-          setRepos(catchedRepos);
-        } else {
-          fetchRepos(userData, abortSignal);
-        }
+        fetchRepos(userData, abortSignal);
       } catch (error) {
         if (error instanceof AbortedDeferredError) {
           console.error(error);
@@ -114,7 +109,6 @@ export default function Home() {
       setSearchParams,
     ]
   );
-
   useEffect(() => {
     const abortController = new AbortController();
 
@@ -123,7 +117,7 @@ export default function Home() {
     return () => {
       abortController.abort();
     };
-  }, [page, per_page, search, fetchData]);
+  }, [page, per_page, search]);
 
   if (!loading && !loadingRepos && !user) {
     return (
